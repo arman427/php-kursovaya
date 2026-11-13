@@ -17,8 +17,10 @@ $pageTitle = $pageTitle ?? 'PC Builder';
 <body>
     <header class="site-header">
         <div class="container site-header__inner">
-            <a href="index.php" class="brand" aria-label="PC Builder — на главную"><img src="assets/images/logo.png"
-                    alt="" class="brand__mark"><span class="brand__name">PC BUILDER</span></a>
+            <a href="index.php" class="brand" aria-label="PC Builder — на главную"><img
+                    src="<?= htmlspecialchars($logoMedia['image_path'] ?? 'assets/images/logo.png', ENT_QUOTES, 'UTF-8') ?>"
+                    alt="<?= htmlspecialchars($logoMedia['alt_text'] ?? 'PC Builder', ENT_QUOTES, 'UTF-8') ?>" class="brand__mark"><span
+                    class="brand__name">PC BUILDER</span></a>
             <nav class="site-nav" aria-label="Основная навигация">
                 <a href="catalog.php" class="site-nav__link">Каталог</a>
                 <a href="index.php#popular" class="site-nav__link">Рекомендации</a>
@@ -28,16 +30,16 @@ $pageTitle = $pageTitle ?? 'PC Builder';
             </nav>
             <form class="search-form" action="search.php" method="get"><label class="visually-hidden"
                     for="header-search">Поиск товаров</label><input id="header-search" type="search" name="q"
-                    placeholder="Поиск товаров..."><button type="submit" aria-label="Найти"><svg class="icon">
+                    placeholder="Поиск товаров..." value="<?= htmlspecialchars((string) ($_GET['q'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"><button type="submit" aria-label="Найти"><svg class="icon">
                         <use href="#icon-search"></use>
                     </svg></button></form>
             <div class="header-actions"><a href="favorites.php" class="header-action" aria-label="Избранное"><svg
                         class="icon">
                         <use href="#icon-heart"></use>
-                    </svg></a><a href="cart.php" class="header-action header-action--cart" aria-label="Корзина"><svg
+                    </svg><?php $favoriteCount = is_array($_SESSION['favorites'] ?? null) ? count(array_unique($_SESSION['favorites'])) : 0; ?><?php if ($favoriteCount > 0): ?><b><?= $favoriteCount ?></b><?php endif; ?></a><a href="cart.php" class="header-action header-action--cart" aria-label="Корзина"><svg
                         class="icon">
                         <use href="#icon-cart"></use>
-                    </svg><b>0</b></a></div>
+                    </svg><?php $cartCount = is_array($_SESSION['cart'] ?? null) ? array_sum(array_map('intval', $_SESSION['cart'])) : 0; ?><b><?= $cartCount ?></b></a></div>
             <?php if (!empty($_SESSION['user_email'])): ?>
                 <div class="profile-menu" data-profile-menu>
                     <button type="button" class="header-action header-action--profile" data-profile-toggle
@@ -64,3 +66,4 @@ $pageTitle = $pageTitle ?? 'PC Builder';
             <?php endif; ?>
         </div>
     </header>
+<?php require __DIR__ . '/auth-modal.php'; ?>

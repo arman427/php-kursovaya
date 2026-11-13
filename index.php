@@ -22,13 +22,40 @@ $categories = [
 ];
 
 $stmt = $pdo->query(
-    'SELECT name, rating, reviews_count, price, old_price, badge, badge_class, art
+    'SELECT name, rating, reviews_count, price, old_price, badge, badge_class, image_path
      FROM products
      WHERE is_active = 1
      ORDER BY is_featured DESC, id ASC
      LIMIT 4'
 );
 $products = $stmt->fetchAll();
+
+$mediaStmt = $pdo->query(
+    "SELECT media_key, image_path, alt_text
+     FROM homepage_media
+     WHERE is_active = 1"
+);
+$homepageMedia = [];
+foreach ($mediaStmt->fetchAll() as $media) {
+    $homepageMedia[$media['media_key']] = $media;
+}
+
+$heroMedia = $homepageMedia['hero'] ?? [
+    'image_path' => 'assets/images/hero-img.png',
+    'alt_text' => 'Комплектующие для игрового компьютера',
+];
+$logoMedia = $homepageMedia['logo'] ?? [
+    'image_path' => 'assets/images/logo.png',
+    'alt_text' => 'PC Builder',
+];
+$coolingPromoMedia = $homepageMedia['promo_cooling'] ?? [
+    'image_path' => 'assets/images/cpu-fan_homePage.png',
+    'alt_text' => 'Система охлаждения для компьютера',
+];
+$memoryPromoMedia = $homepageMedia['promo_memory'] ?? [
+    'image_path' => 'assets/images/ram_homePage.png',
+    'alt_text' => 'Оперативная память',
+];
 
 require __DIR__ . '/app/views/header.php';
 ?>
@@ -137,7 +164,8 @@ require __DIR__ . '/app/views/header.php';
             </div>
             <div class="hero__visual">
                 <div class="hero-placeholder">
-                    <img src="./assets/images/hero-img.png" alt="">
+                    <img src="<?= htmlspecialchars($heroMedia['image_path'], ENT_QUOTES, 'UTF-8') ?>"
+                        alt="<?= htmlspecialchars($heroMedia['alt_text'], ENT_QUOTES, 'UTF-8') ?>">
                 </div>
             </div>
         </div>
@@ -148,7 +176,7 @@ require __DIR__ . '/app/views/header.php';
         <div class="category-carousel__viewport">
             <div class="category-bar">
                 <?php foreach ([$categories, $categories] as $copyIndex => $categoryList): ?>
-                    <div class="category-bar__set"<?= $copyIndex === 1 ? ' aria-hidden="true"' : '' ?>>
+                    <div class="category-bar__set" <?= $copyIndex === 1 ? ' aria-hidden="true"' : '' ?>>
                         <?php foreach ($categoryList as $category): ?>
                             <a href="catalog.php" class="category-item"><svg class="category-item__icon">
                                     <use href="#icon-<?= $category['icon'] ?>"></use>
@@ -175,7 +203,9 @@ require __DIR__ . '/app/views/header.php';
                                 <use href="#icon-heart"></use>
                             </svg></button></div>
                     <div class="product-visual">
-                        <div class="product-placeholder">Товар<br><small>изображение</small></div>
+                        <img class="product-image"
+                            src="<?= htmlspecialchars($product['image_path'], ENT_QUOTES, 'UTF-8') ?>"
+                            alt="<?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
                     </div>
                     <h3><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></h3>
                     <div class="rating"><span>★</span>
@@ -205,7 +235,11 @@ require __DIR__ . '/app/views/header.php';
                         <use href="#icon-arrow"></use>
                     </svg></span>
             </div>
-            <div class="promo-placeholder">Заглушка<br>охлаждения</div>
+            <div class="promo__media">
+                <span class="promo__glow" aria-hidden="true"></span>
+                <img src="<?= htmlspecialchars($coolingPromoMedia['image_path'], ENT_QUOTES, 'UTF-8') ?>"
+                    alt="<?= htmlspecialchars($coolingPromoMedia['alt_text'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
+            </div>
         </a>
         <a href="catalog.php" class="promo promo--memory">
             <div class="promo__content">
@@ -215,7 +249,11 @@ require __DIR__ . '/app/views/header.php';
                         <use href="#icon-arrow"></use>
                     </svg></span>
             </div>
-            <div class="promo-placeholder">Заглушка<br>памяти</div>
+            <div class="promo__media">
+                <span class="promo__glow" aria-hidden="true"></span>
+                <img src="<?= htmlspecialchars($memoryPromoMedia['image_path'], ENT_QUOTES, 'UTF-8') ?>"
+                    alt="<?= htmlspecialchars($memoryPromoMedia['alt_text'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
+            </div>
         </a>
     </section>
 
@@ -259,24 +297,6 @@ require __DIR__ . '/app/views/header.php';
             ПК</span></div>
 </footer>
 
-<div class="modal" id="auth-modal" aria-hidden="true">
-    <div class="modal__backdrop" data-auth-close></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title"><button class="modal__close"
-            type="button" data-auth-close aria-label="Закрыть">×</button>
-        <h2 id="auth-title">Войти в аккаунт</h2><?php if ($authError): ?>
-            <p class="form-error"><?= htmlspecialchars($authError, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-        <div class="auth-tabs"><button type="button" class="auth-tab is-active"
-                data-auth-tab="login">Войти</button><button type="button" class="auth-tab"
-                data-auth-tab="register">Регистрация</button></div>
-        <form class="auth-form" method="post"><input type="hidden" name="auth_action" value="login"><label>Email<input
-                    type="email" name="email" required maxlength="120" autocomplete="email"></label><label>Пароль<input
-                    type="password" name="password" required minlength="6" maxlength="72"
-                    autocomplete="current-password"></label><label class="register-only">Повторите пароль<input
-                    type="password" name="password_confirmation" minlength="6" maxlength="72"
-                    autocomplete="new-password"></label><button class="button button--primary"
-                type="submit">Продолжить</button></form>
-    </div>
-</div>
 </body>
 
 </html>

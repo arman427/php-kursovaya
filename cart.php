@@ -13,6 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = (string) ($_POST['store_action'] ?? '');
     $productId = trim((string) ($_POST['product_id'] ?? ''));
     if ($action !== '' && !catalogRequireAuth()) {
+        if (catalogIsAjax()) {
+            catalogAjaxResponse($_SESSION['auth_notice'] ?? 'Войдите, чтобы управлять корзиной.', 'error');
+        }
         catalogRedirectBack('cart.php');
     }
     if ($action === 'update_cart' && $productId !== '') {
@@ -27,6 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'add_cart' && $productId !== '' && catalogProduct($pdo, $productId) !== null) {
         addCartItem($productId);
         catalogFlash('Товар добавлен в корзину.');
+    }
+    if (catalogIsAjax()) {
+        $flash = consumeCatalogFlash();
+        catalogAjaxResponse($flash['message'] ?? 'Корзина обновлена.', $flash['type'] ?? 'success');
     }
     catalogRedirectBack('cart.php');
 }

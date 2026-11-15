@@ -23,12 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action !== '') {
    } elseif ($action === 'toggle_favorite' && $product !== null && catalogRequireAuth()) {
       $isAdded = toggleFavorite((string) $product['id']);
       catalogFlash($isAdded ? 'Товар добавлен в избранное.' : 'Товар удалён из избранного.');
-   } elseif ($action === 'remove_favorite' && $product !== null && catalogRequireAuth()) {
+    } elseif ($action === 'remove_favorite' && $product !== null && catalogRequireAuth()) {
       removeFavorite((string) $product['id']);
       catalogFlash('Товар удалён из избранного.');
-   }
+    }
 
-   catalogRedirectBack('catalog.php');
+    if (catalogIsAjax()) {
+       $flash = consumeCatalogFlash();
+       catalogAjaxResponse($flash['message'] ?? ($_SESSION['auth_notice'] ?? 'Не удалось выполнить действие.'), $flash['type'] ?? (isset($_SESSION['auth_notice']) ? 'error' : 'success'));
+    }
+
+    catalogRedirectBack('catalog.php');
 }
 
 $searchQuery = trim((string) ($_GET['q'] ?? ''));

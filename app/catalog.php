@@ -418,6 +418,24 @@ function consumeCatalogFlash(): ?array
     return is_array($flash) ? $flash : null;
 }
 
+function catalogIsAjax(): bool
+{
+    return strtolower((string) ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'xmlhttprequest';
+}
+
+function catalogAjaxResponse(?string $message = null, string $type = 'success'): never
+{
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'ok' => $type !== 'error',
+        'message' => $message ?? '',
+        'type' => $type,
+        'cartCount' => cartItemCount(),
+        'favoriteCount' => count(favoriteIds()),
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 function cartItems(): array
 {
     $cart = $_SESSION['cart'] ?? [];

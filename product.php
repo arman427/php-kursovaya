@@ -27,6 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $product !== null) {
         $added = toggleFavorite((string) $product['id']);
         catalogFlash($added ? 'Товар добавлен в избранное.' : 'Товар удалён из избранного.');
     }
+    if (catalogIsAjax()) {
+        $flash = consumeCatalogFlash();
+        catalogAjaxResponse($flash['message'] ?? ($_SESSION['auth_notice'] ?? 'Не удалось выполнить действие.'), $flash['type'] ?? (isset($_SESSION['auth_notice']) ? 'error' : 'success'));
+    }
     catalogRedirectBack('product.php?id=' . urlencode((string) $product['id']));
 }
 

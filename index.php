@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['store_action'])) {
             catalogFlash('Избранное обновлено.');
         }
     }
+    if (catalogIsAjax()) {
+        $flash = consumeCatalogFlash();
+        catalogAjaxResponse($flash['message'] ?? ($_SESSION['auth_notice'] ?? 'Не удалось выполнить действие.'), $flash['type'] ?? (isset($_SESSION['auth_notice']) ? 'error' : 'success'));
+    }
     header('Location: index.php#popular');
     exit;
 }

@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action !== '') {
         removeFavorite((string) $product['id']);
         catalogFlash('Товар удалён из избранного.');
     }
+    if (catalogIsAjax()) {
+        $flash = consumeCatalogFlash();
+        catalogAjaxResponse($flash['message'] ?? ($_SESSION['auth_notice'] ?? 'Не удалось выполнить действие.'), $flash['type'] ?? (isset($_SESSION['auth_notice']) ? 'error' : 'success'));
+    }
     catalogRedirectBack('favorites.php');
 }
 

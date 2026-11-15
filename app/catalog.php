@@ -11,6 +11,9 @@ declare(strict_types=1);
  * database until database/schema.sql is imported again.
  */
 
+// Заглушка для товаров, у которых ещё нет собственного изображения.
+const CATALOG_PLACEHOLDER_IMAGE = 'assets/images/product-placeholder.svg';
+
 function catalogCategories(): array
 {
     return [
@@ -52,7 +55,7 @@ function catalogDemoProducts(): array
             'badge' => 'Хит',
             'badge_class' => 'badge--orange',
             'art' => 'cpu',
-            'image_path' => 'assets/images/7800x3d.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'processors',
             'brand' => 'Intel',
             'in_stock' => 1,
@@ -68,7 +71,7 @@ function catalogDemoProducts(): array
             'badge' => 'Новинка',
             'badge_class' => 'badge--green',
             'art' => 'cpu',
-            'image_path' => 'assets/images/7800x3d.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'processors',
             'brand' => 'AMD',
             'in_stock' => 1,
@@ -84,7 +87,7 @@ function catalogDemoProducts(): array
             'badge' => 'Акция',
             'badge_class' => 'badge--red',
             'art' => 'motherboard',
-            'image_path' => 'assets/images/b650 msi.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'motherboards',
             'brand' => 'MSI',
             'in_stock' => 1,
@@ -100,7 +103,7 @@ function catalogDemoProducts(): array
             'badge' => 'Хит',
             'badge_class' => 'badge--orange',
             'art' => 'gpu',
-            'image_path' => 'assets/images/5080.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'gpu',
             'brand' => 'ASUS',
             'in_stock' => 1,
@@ -116,7 +119,7 @@ function catalogDemoProducts(): array
             'badge' => 'Популярное',
             'badge_class' => 'badge--blue',
             'art' => 'ram',
-            'image_path' => 'assets/images/ram_homePage.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'ram',
             'brand' => 'Kingston',
             'in_stock' => 1,
@@ -132,7 +135,7 @@ function catalogDemoProducts(): array
             'badge' => 'Хит',
             'badge_class' => 'badge--orange',
             'art' => 'ssd',
-            'image_path' => 'assets/images/ram_homePage.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'storage',
             'brand' => 'Samsung',
             'in_stock' => 1,
@@ -148,7 +151,7 @@ function catalogDemoProducts(): array
             'badge' => 'Хит',
             'badge_class' => 'badge--orange',
             'art' => 'power',
-            'image_path' => 'assets/images/deepcool-1000.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'power',
             'brand' => 'DeepCool',
             'in_stock' => 1,
@@ -164,7 +167,7 @@ function catalogDemoProducts(): array
             'badge' => 'Популярное',
             'badge_class' => 'badge--blue',
             'art' => 'cooling',
-            'image_path' => 'assets/images/cpu-fan_homePage.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'cooling',
             'brand' => 'DeepCool',
             'in_stock' => 1,
@@ -180,7 +183,7 @@ function catalogDemoProducts(): array
             'badge' => 'Новинка',
             'badge_class' => 'badge--green',
             'art' => 'case',
-            'image_path' => 'assets/images/hero-img.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'cases',
             'brand' => 'Cougar',
             'in_stock' => 1,
@@ -196,7 +199,7 @@ function catalogDemoProducts(): array
             'badge' => 'Хит продаж',
             'badge_class' => 'badge--orange',
             'art' => 'cpu',
-            'image_path' => 'assets/images/7800x3d.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'processors',
             'brand' => 'AMD',
             'in_stock' => 1,
@@ -212,7 +215,7 @@ function catalogDemoProducts(): array
             'badge' => 'Новинка',
             'badge_class' => 'badge--green',
             'art' => 'gpu',
-            'image_path' => 'assets/images/5080.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'gpu',
             'brand' => 'NVIDIA',
             'in_stock' => 1,
@@ -228,7 +231,7 @@ function catalogDemoProducts(): array
             'badge' => '-12%',
             'badge_class' => 'badge--red',
             'art' => 'motherboard',
-            'image_path' => 'assets/images/b650 msi.png',
+            'image_path' => CATALOG_PLACEHOLDER_IMAGE,
             'category_slug' => 'motherboards',
             'brand' => 'MSI',
             'in_stock' => 1,
@@ -271,6 +274,16 @@ function catalogInferMetadata(string $name): array
     return ['category_slug' => $category, 'brand' => $brand, 'in_stock' => 1];
 }
 
+function catalogImagePath(string $path): string
+{
+    $path = trim($path);
+    if ($path === '' || !is_file(__DIR__ . '/../' . $path)) {
+        return CATALOG_PLACEHOLDER_IMAGE;
+    }
+
+    return $path;
+}
+
 function catalogNormalizeProduct(array $row): array
 {
     $metadata = catalogInferMetadata((string) ($row['name'] ?? 'Товар'));
@@ -289,7 +302,7 @@ function catalogNormalizeProduct(array $row): array
         'badge' => (string) ($row['badge'] ?? ''),
         'badge_class' => (string) ($row['badge_class'] ?? 'badge--orange'),
         'art' => (string) ($row['art'] ?? 'product'),
-        'image_path' => (string) ($row['image_path'] ?? 'assets/images/hero-img.png'),
+        'image_path' => catalogImagePath((string) ($row['image_path'] ?? '')),
         'category_slug' => $category,
         'brand' => (string) ($row['brand'] ?? $metadata['brand']),
         'in_stock' => (int) ($row['in_stock'] ?? $metadata['in_stock']) === 1 ? 1 : 0,
@@ -356,6 +369,24 @@ function catalogProduct(PDO $pdo, string $id): ?array
 function catalogPrice(float $price): string
 {
     return number_format($price, 0, ',', ' ') . ' ₽';
+}
+
+function catalogRequireAuth(): bool
+{
+    if (isAuthenticated()) {
+        return true;
+    }
+
+    $_SESSION['auth_notice'] = 'Войдите или зарегистрируйтесь, чтобы добавлять товары в корзину и избранное.';
+    return false;
+}
+
+function consumeAuthNotice(): ?string
+{
+    $notice = $_SESSION['auth_notice'] ?? null;
+    unset($_SESSION['auth_notice']);
+
+    return is_string($notice) && $notice !== '' ? $notice : null;
 }
 
 function catalogSafeReturnTo(string $target, string $fallback = 'catalog.php'): string
@@ -482,7 +513,7 @@ function cartTotal(PDO $pdo): float
 {
     $total = 0.0;
     foreach (cartItems() as $id => $quantity) {
-        $product = catalogProduct($pdo, $id);
+        $product = catalogProduct($pdo, (string) $id);
         if ($product !== null) {
             $total += (float) $product['price'] * $quantity;
         }

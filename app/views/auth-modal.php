@@ -3,6 +3,9 @@
     <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
         <button class="modal__close" type="button" data-auth-close aria-label="Закрыть">×</button>
         <h2 id="auth-title">Войти в аккаунт</h2>
+        <?php if (!empty($authNotice)): ?>
+            <p class="form-error auth-notice"><?= htmlspecialchars((string) $authNotice, ENT_QUOTES, 'UTF-8') ?></p>
+        <?php endif; ?>
         <?php if (!empty($authError)): ?>
             <p class="form-error"><?= htmlspecialchars((string) $authError, ENT_QUOTES, 'UTF-8') ?></p>
         <?php endif; ?>

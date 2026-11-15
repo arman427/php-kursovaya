@@ -6,9 +6,26 @@ session_start();
 
 require __DIR__ . '/app/config/database.php';
 require __DIR__ . '/app/auth.php';
+require __DIR__ . '/app/catalog.php';
 
 $pageTitle = 'PC Builder — интернет-магазин комплектующих для ПК';
 $authError = handleAuthRequest($pdo);
+$authNotice = consumeAuthNotice();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['store_action'])) {
+    $productId = trim((string) ($_POST['product_id'] ?? ''));
+    if ($productId !== '' && catalogProduct($pdo, $productId) !== null && catalogRequireAuth()) {
+        if ($_POST['store_action'] === 'add_cart') {
+            addCartItem($productId);
+            catalogFlash('Товар добавлен в корзину.');
+        } elseif ($_POST['store_action'] === 'toggle_favorite') {
+            toggleFavorite($productId);
+            catalogFlash('Избранное обновлено.');
+        }
+    }
+    header('Location: index.php#popular');
+    exit;
+}
 
 $categories = [
     ['title' => 'Процессоры', 'icon' => 'cpu'],
@@ -22,7 +39,7 @@ $categories = [
 ];
 
 $stmt = $pdo->query(
-    'SELECT name, rating, reviews_count, price, old_price, badge, badge_class, image_path
+    'SELECT id, name, rating, reviews_count, price, old_price, badge, badge_class, image_path
      FROM products
      WHERE is_active = 1
      ORDER BY is_featured DESC, id ASC
@@ -198,10 +215,10 @@ require __DIR__ . '/app/views/header.php';
             <?php foreach ($products as $product): ?>
                 <article class="product-card">
                     <div class="product-card__top"><span
-                            class="badge <?= htmlspecialchars($product['badge_class'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($product['badge'], ENT_QUOTES, 'UTF-8') ?></span><button
-                            class="favorite-button" type="button" aria-label="Добавить в избранное"><svg class="icon">
+                            class="badge <?= htmlspecialchars($product['badge_class'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($product['badge'], ENT_QUOTES, 'UTF-8') ?></span><form method="post" class="inline-action"><input type="hidden" name="store_action" value="toggle_favorite"><input type="hidden" name="product_id" value="<?= htmlspecialchars((string) $product['id'], ENT_QUOTES, 'UTF-8') ?>"><button
+                            class="favorite-button" type="submit" aria-label="Добавить в избранное"><svg class="icon">
                                 <use href="#icon-heart"></use>
-                            </svg></button></div>
+                            </svg></button></form></div>
                     <div class="product-visual">
                         <img class="product-image"
                             src="<?= htmlspecialchars($product['image_path'], ENT_QUOTES, 'UTF-8') ?>"
@@ -215,10 +232,10 @@ require __DIR__ . '/app/views/header.php';
                     <div class="product-card__bottom">
                         <div><?php if ($product['old_price']): ?><del><?= number_format((float) $product['old_price'], 0, ',', ' ') ?>
                                     ₽</del><?php endif; ?><strong><?= number_format((float) $product['price'], 0, ',', ' ') ?>
-                                ₽</strong></div><button class="add-cart" type="button" aria-label="Добавить в корзину"><svg
+                                ₽</strong></div><form method="post" class="inline-action"><input type="hidden" name="store_action" value="add_cart"><input type="hidden" name="product_id" value="<?= htmlspecialchars((string) $product['id'], ENT_QUOTES, 'UTF-8') ?>"><button class="add-cart" type="submit" aria-label="Добавить в корзину"><svg
                                 class="icon">
                                 <use href="#icon-cart"></use>
-                            </svg><span>В корзину</span></button>
+                            </svg><span>В корзину</span></button></form>
                     </div>
                 </article>
             <?php endforeach; ?>

@@ -6,6 +6,8 @@ session_start();
 require __DIR__ . '/app/config/database.php';
 require __DIR__ . '/app/auth.php';
 require __DIR__ . '/app/catalog.php';
+$authError = handleAuthRequest($pdo);
+$authNotice = consumeAuthNotice();
 
 $query = trim((string) ($_GET['q'] ?? ''));
 $products = catalogProducts($pdo);

@@ -8,9 +8,13 @@ require __DIR__ . '/app/auth.php';
 require __DIR__ . '/app/catalog.php';
 
 $authError = handleAuthRequest($pdo);
+$authNotice = consumeAuthNotice();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = (string) ($_POST['store_action'] ?? '');
     $productId = trim((string) ($_POST['product_id'] ?? ''));
+    if ($action !== '' && !catalogRequireAuth()) {
+        catalogRedirectBack('cart.php');
+    }
     if ($action === 'update_cart' && $productId !== '') {
         setCartItemQuantity($productId, (int) ($_POST['quantity'] ?? 0));
         catalogFlash('Количество товара обновлено.');
@@ -29,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $cart = [];
 foreach (cartItems() as $id => $quantity) {
-    $product = catalogProduct($pdo, $id);
+    $product = catalogProduct($pdo, (string) $id);
     if ($product !== null) {
         $product['quantity'] = $quantity;
         $product['line_total'] = (float) $product['price'] * $quantity;

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS products (
     badge VARCHAR(40) NOT NULL,
     badge_class VARCHAR(30) NOT NULL DEFAULT 'badge--orange',
     art VARCHAR(30) NOT NULL DEFAULT 'product',
-    image_path VARCHAR(255) NOT NULL DEFAULT 'assets/images/product.png',
+    image_path VARCHAR(255) NOT NULL DEFAULT 'assets/images/product-placeholder.svg',
     category_slug VARCHAR(40) NOT NULL DEFAULT 'peripherals',
     brand VARCHAR(80) NOT NULL DEFAULT 'Другой бренд',
     in_stock TINYINT(1) NOT NULL DEFAULT 1,
@@ -45,7 +45,7 @@ SET @image_path_column_exists = (
 );
 SET @add_image_path_sql = IF(
     @image_path_column_exists = 0,
-    'ALTER TABLE products ADD COLUMN image_path VARCHAR(255) NOT NULL DEFAULT ''assets/images/product.png'' AFTER art',
+    'ALTER TABLE products ADD COLUMN image_path VARCHAR(255) NOT NULL DEFAULT ''assets/images/product-placeholder.svg'' AFTER art',
     'SELECT 1'
 );
 PREPARE add_image_path_statement FROM @add_image_path_sql;

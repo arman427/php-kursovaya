@@ -32,6 +32,21 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.classList.remove("modal-open");
    }
 
+   const mobileMenuToggle = document.querySelector("[data-mobile-menu-toggle]");
+   const siteHeader = document.querySelector(".site-header");
+   if (mobileMenuToggle && siteHeader) {
+      mobileMenuToggle.addEventListener("click", function () {
+         const isOpen = siteHeader.classList.toggle("menu-is-open");
+         mobileMenuToggle.setAttribute("aria-expanded", String(isOpen));
+      });
+      document.querySelectorAll(".site-nav__link").forEach(function (link) {
+         link.addEventListener("click", function () {
+            siteHeader.classList.remove("menu-is-open");
+            mobileMenuToggle.setAttribute("aria-expanded", "false");
+         });
+      });
+   }
+
    const profileMenus = document.querySelectorAll("[data-profile-menu]");
 
    function setProfileMenuState(menu, isOpen) {
@@ -93,5 +108,5 @@ document.addEventListener("DOMContentLoaded", function () {
       });
    });
 
-   if (document.querySelector(".form-error")) openModal();
+    if (document.querySelector(".form-error, .auth-notice")) openModal();
 });

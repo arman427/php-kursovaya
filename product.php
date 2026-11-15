@@ -8,6 +8,7 @@ require __DIR__ . '/app/auth.php';
 require __DIR__ . '/app/catalog.php';
 
 $authError = handleAuthRequest($pdo);
+$authNotice = consumeAuthNotice();
 $productId = trim((string) ($_GET['id'] ?? ''));
 $product = $productId !== '' ? catalogProduct($pdo, $productId) : null;
 if ($product === null) {
@@ -19,10 +20,10 @@ if ($product === null) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $product !== null) {
     $action = (string) ($_POST['store_action'] ?? '');
-    if ($action === 'add_cart') {
+    if ($action === 'add_cart' && catalogRequireAuth()) {
         addCartItem((string) $product['id'], max(1, (int) ($_POST['quantity'] ?? 1)));
         catalogFlash('Товар добавлен в корзину.');
-    } elseif ($action === 'toggle_favorite') {
+    } elseif ($action === 'toggle_favorite' && catalogRequireAuth()) {
         $added = toggleFavorite((string) $product['id']);
         catalogFlash($added ? 'Товар добавлен в избранное.' : 'Товар удалён из избранного.');
     }

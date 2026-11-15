@@ -55,6 +55,7 @@ function handleAuthRequest(PDO $pdo): ?string
 
         $insert = $pdo->prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)');
         $insert->execute([$email, password_hash($password, PASSWORD_DEFAULT)]);
+        session_regenerate_id(true);
         $_SESSION['user_email'] = $email;
         header('Location: index.php');
         exit;
@@ -68,10 +69,16 @@ function handleAuthRequest(PDO $pdo): ?string
             return 'Неверный email или пароль.';
         }
 
+        session_regenerate_id(true);
         $_SESSION['user_email'] = $user['email'];
         header('Location: index.php');
         exit;
     }
 
     return 'Неизвестное действие.';
+}
+
+function isAuthenticated(): bool
+{
+    return isset($_SESSION['user_email']) && is_string($_SESSION['user_email']) && $_SESSION['user_email'] !== '';
 }

@@ -14,8 +14,11 @@ $product = $productId !== '' ? catalogProduct($pdo, $productId) : null;
 if ($product === null) {
     http_response_code(404);
     $pageTitle = 'Товар не найден — PC Builder';
+    $pageDescription = 'Запрошенный товар не найден в каталоге PC Builder. Посмотрите другие комплектующие для ПК.';
 } else {
     $pageTitle = $product['name'] . ' — PC Builder';
+    $pageDescription = $product['name'] . ' — ' . catalogPrice((float) $product['price']) . '. ' . ((int) $product['in_stock'] === 1 ? 'В наличии, ' : 'Под заказ, ') . 'гарантия 12 месяцев. ' . trim((string) $product['description']);
+    $pageImage = (string) $product['image_path'];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $product !== null) {

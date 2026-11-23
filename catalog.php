@@ -9,6 +9,7 @@ require __DIR__ . '/app/auth.php';
 require __DIR__ . '/app/catalog.php';
 
 $pageTitle = 'Каталог товаров — PC Builder';
+$pageDescription = 'Каталог комплектующих для ПК: процессоры, видеокарты, материнские платы, оперативная память, накопители, блоки питания, охлаждение и корпуса.';
 $authError = handleAuthRequest($pdo);
 $authNotice = consumeAuthNotice();
 
@@ -331,7 +332,6 @@ require __DIR__ . '/app/views/header.php';
       <div class="catalog-benefit"><svg class="icon">
             <use href="#icon-heart"></use>
          </svg><span><strong>Поддержка</strong>24/7</span></div>
-      <div class="catalog-benefit catalog-benefit--promo"><strong>Собери свой<br>идеальный ПК</strong><a href="index.php#popular" aria-label="Перейти к рекомендациям">→</a></div>
    </section>
 </main>
 

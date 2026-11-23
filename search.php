@@ -16,6 +16,7 @@ if ($query !== '') {
 }
 
 $pageTitle = $query !== '' ? 'Поиск: ' . $query . ' — PC Builder' : 'Поиск товаров — PC Builder';
+$pageDescription = $query !== '' ? 'Результаты поиска по запросу «' . $query . '» среди комплектующих для ПК в магазине PC Builder.' : 'Поиск комплектующих для ПК в магазине PC Builder: процессоры, видеокарты, память, накопители и другое.';
 $flash = consumeCatalogFlash();
 require __DIR__ . '/app/views/header.php';
 ?>

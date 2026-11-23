@@ -9,6 +9,7 @@ require __DIR__ . '/app/auth.php';
 require __DIR__ . '/app/catalog.php';
 
 $pageTitle = 'PC Builder — интернет-магазин комплектующих для ПК';
+$pageDescription = 'PC Builder — интернет-магазин комплектующих для ПК: процессоры, видеокарты, материнские платы, память и накопители. Гарантия 12 месяцев и доставка от 1 дня.';
 $authError = handleAuthRequest($pdo);
 $authNotice = consumeAuthNotice();
 
@@ -78,10 +79,13 @@ $memoryPromoMedia = $homepageMedia['promo_memory'] ?? [
     'alt_text' => 'Оперативная память',
 ];
 
+$flash = consumeCatalogFlash();
+
 require __DIR__ . '/app/views/header.php';
 ?>
 
 <main>
+<?php if ($flash): ?><div class="flash flash--<?= htmlspecialchars((string) $flash['type'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $flash['message'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
     <svg class="svg-sprite" aria-hidden="true">
         <symbol id="icon-search" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="6.5"></circle>
@@ -219,10 +223,14 @@ require __DIR__ . '/app/views/header.php';
             <?php foreach ($products as $product): ?>
                 <article class="product-card">
                     <div class="product-card__top"><span
-                            class="badge <?= htmlspecialchars($product['badge_class'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($product['badge'], ENT_QUOTES, 'UTF-8') ?></span><form method="post" class="inline-action"><input type="hidden" name="store_action" value="toggle_favorite"><input type="hidden" name="product_id" value="<?= htmlspecialchars((string) $product['id'], ENT_QUOTES, 'UTF-8') ?>"><button
-                            class="favorite-button" type="submit" aria-label="Добавить в избранное"><svg class="icon">
-                                <use href="#icon-heart"></use>
-                            </svg></button></form></div>
+                            class="badge <?= htmlspecialchars($product['badge_class'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($product['badge'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <form method="post" class="inline-action"><input type="hidden" name="store_action"
+                                value="toggle_favorite"><input type="hidden" name="product_id"
+                                value="<?= htmlspecialchars((string) $product['id'], ENT_QUOTES, 'UTF-8') ?>"><button
+                                class="favorite-button" type="submit" aria-label="Добавить в избранное"><svg class="icon">
+                                    <use href="#icon-heart"></use>
+                                </svg></button></form>
+                    </div>
                     <div class="product-visual">
                         <img class="product-image"
                             src="<?= htmlspecialchars($product['image_path'], ENT_QUOTES, 'UTF-8') ?>"
@@ -236,10 +244,13 @@ require __DIR__ . '/app/views/header.php';
                     <div class="product-card__bottom">
                         <div><?php if ($product['old_price']): ?><del><?= number_format((float) $product['old_price'], 0, ',', ' ') ?>
                                     ₽</del><?php endif; ?><strong><?= number_format((float) $product['price'], 0, ',', ' ') ?>
-                                ₽</strong></div><form method="post" class="inline-action"><input type="hidden" name="store_action" value="add_cart"><input type="hidden" name="product_id" value="<?= htmlspecialchars((string) $product['id'], ENT_QUOTES, 'UTF-8') ?>"><button class="add-cart" type="submit" aria-label="Добавить в корзину"><svg
-                                class="icon">
-                                <use href="#icon-cart"></use>
-                            </svg><span>В корзину</span></button></form>
+                                ₽</strong></div>
+                        <form method="post" class="inline-action"><input type="hidden" name="store_action"
+                                value="add_cart"><input type="hidden" name="product_id"
+                                value="<?= htmlspecialchars((string) $product['id'], ENT_QUOTES, 'UTF-8') ?>"><button
+                                class="add-cart" type="submit" aria-label="Добавить в корзину"><svg class="icon">
+                                    <use href="#icon-cart"></use>
+                                </svg><span>В корзину</span></button></form>
                     </div>
                 </article>
             <?php endforeach; ?>

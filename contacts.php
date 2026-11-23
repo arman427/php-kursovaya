@@ -8,6 +8,7 @@ require __DIR__ . '/app/auth.php';
 
 $authError = handleAuthRequest($pdo);
 $pageTitle = 'Контакты — PC Builder';
+$pageDescription = 'Контакты магазина PC Builder: телефон, почта, адрес шоурума и наши страницы в социальных сетях.';
 require __DIR__ . '/app/views/header.php';
 ?>
 <main class="contacts-page">
@@ -27,6 +28,11 @@ require __DIR__ . '/app/views/header.php';
             <a class="contact-card contact-card--accent" href="tel:+78005553535"><span class="contact-card__icon">☎</span><span><small>Позвоните нам</small><strong>8 800 555-35-35</strong><em>Ежедневно с 9:00 до 21:00</em></span></a>
             <a class="contact-card" href="mailto:hello@pc-builder.local"><span class="contact-card__icon">@</span><span><small>Напишите нам</small><strong>hello@pc-builder.local</strong><em>Ответим в течение рабочего дня</em></span></a>
             <div class="contact-card"><span class="contact-card__icon">⌖</span><span><small>Приезжайте в шоурум</small><strong>Москва, ул. Техническая, 12</strong><em>Самовывоз и консультация по сборке</em></span></div>
+        </div>
+        <div class="contact-cards">
+            <?php foreach ($siteConfig['social'] as $social): ?>
+                <a class="contact-card" href="<?= htmlspecialchars($social['url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener"><span class="contact-card__icon"><?= htmlspecialchars($social['short'], ENT_QUOTES, 'UTF-8') ?></span><span><small>Мы в соцсетях</small><strong><?= htmlspecialchars($social['title'], ENT_QUOTES, 'UTF-8') ?></strong><em><?= htmlspecialchars($social['note'], ENT_QUOTES, 'UTF-8') ?></em></span></a>
+            <?php endforeach; ?>
         </div>
         <div class="contacts-columns">
             <section class="contact-form-card"><p class="eyebrow"><span></span> Обратная связь</p><h2>Есть вопрос?</h2><p class="contact-form-card__lead">Оставьте заявку, и специалист свяжется с вами в удобное время.</p><form class="contact-form" action="mailto:hello@pc-builder.local" method="post" enctype="text/plain"><label>Ваше имя<input type="text" name="name" placeholder="Как к вам обращаться?" required></label><label>Телефон или email<input type="text" name="contact" placeholder="Для ответа" required></label><label>Сообщение<textarea name="message" rows="4" placeholder="Расскажите, чем помочь" required></textarea></label><button class="button button--primary" type="submit">Отправить сообщение <span>→</span></button></form></section>

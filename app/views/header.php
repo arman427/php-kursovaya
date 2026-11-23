@@ -1,6 +1,17 @@
 <?php
 $pageTitle = $pageTitle ?? 'PC Builder';
 $isAuthenticated = isAuthenticated();
+$siteConfig = require __DIR__ . '/../config/site.php';
+$pageDescription = mb_strimwidth(trim((string) ($pageDescription ?? $siteConfig['default_description'])), 0, 200, '…', 'UTF-8');
+$pageImage = (string) ($pageImage ?? $siteConfig['default_image']);
+$metaScheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$metaHost = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
+$metaBaseDir = rtrim(str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '/'))), '/');
+$metaUrl = $metaScheme . '://' . $metaHost . (string) ($_SERVER['REQUEST_URI'] ?? '/');
+$metaImage = preg_match('#^https?://#', $pageImage) === 1
+   ? $pageImage
+   : $metaScheme . '://' . $metaHost . $metaBaseDir . '/' . implode('/', array_map('rawurlencode', explode('/', ltrim($pageImage, '/'))));
+$metrikaId = (int) $siteConfig['metrika_id'];
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -8,14 +19,38 @@ $isAuthenticated = isAuthenticated();
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
+   <meta property="og:type" content="website">
+   <meta property="og:site_name" content="<?= htmlspecialchars($siteConfig['site_name'], ENT_QUOTES, 'UTF-8') ?>">
+   <meta property="og:locale" content="ru_RU">
+   <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
+   <meta property="og:description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
+   <meta property="og:url" content="<?= htmlspecialchars($metaUrl, ENT_QUOTES, 'UTF-8') ?>">
+   <meta property="og:image" content="<?= htmlspecialchars($metaImage, ENT_QUOTES, 'UTF-8') ?>">
+   <meta name="twitter:card" content="summary">
+   <?php if ($siteConfig['twitter_site'] !== ''): ?><meta name="twitter:site" content="<?= htmlspecialchars($siteConfig['twitter_site'], ENT_QUOTES, 'UTF-8') ?>"><?php endif; ?>
+   <meta name="twitter:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
+   <meta name="twitter:description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
+   <meta name="twitter:image" content="<?= htmlspecialchars($metaImage, ENT_QUOTES, 'UTF-8') ?>">
    <link rel="stylesheet" href="assets/css/reset.css">
    <link rel="stylesheet" href="assets/css/fonts.css">
    <link rel="stylesheet" href="assets/css/style.css?v=2">
    <script src="assets/js/main.js?v=2" defer></script>
    <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
+   <?php if ($metrikaId > 0): ?>
+      <script>
+         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+         m[i].l=1*new Date();
+         for (var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+         (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+         ym(<?= $metrikaId ?>,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true});
+      </script>
+   <?php endif; ?>
 </head>
 
 <body>
+   <?php if ($metrikaId > 0): ?><noscript><div><img src="https://mc.yandex.ru/watch/<?= $metrikaId ?>" style="position:absolute;left:-9999px;" alt=""></div></noscript><?php endif; ?>
    <svg class="svg-sprite" aria-hidden="true">
       <symbol id="icon-search" viewBox="0 0 24 24">
          <circle cx="11" cy="11" r="6.5"></circle>

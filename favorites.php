@@ -39,6 +39,7 @@ foreach (favoriteIds() as $id) {
 }
 
 $pageTitle = 'Избранное — PC Builder';
+$pageDescription = 'Избранные комплектующие для ПК в магазине PC Builder: сохраняйте понравившиеся товары и возвращайтесь к ним позже.';
 $flash = consumeCatalogFlash();
 require __DIR__ . '/app/views/header.php';
 ?>

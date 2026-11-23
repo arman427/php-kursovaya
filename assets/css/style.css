@@ -4293,3 +4293,25 @@ a {
       padding: 18px 14px;
    }
 }
+
+.settings-page {
+   max-width: 720px;
+}
+
+.settings-card {
+   margin-bottom: 20px;
+}
+
+.settings-card .flash {
+   margin-bottom: 14px;
+}
+
+.checkout-field input:disabled {
+   color: var(--color-muted);
+   cursor: not-allowed;
+   opacity: 0.8;
+}
+
+.settings-submit {
+   margin-top: 18px;
+}

@@ -115,7 +115,7 @@ $metrikaId = (int) $siteConfig['metrika_id'];
                <div class="profile-dropdown" id="profile-dropdown" data-profile-dropdown role="menu" aria-hidden="true">
                   <div class="profile-dropdown__user"><span>Вы вошли как</span><strong><?= htmlspecialchars((string) $_SESSION['user_email'], ENT_QUOTES, 'UTF-8') ?></strong></div>
                   <a class="profile-dropdown__link" href="profile.php" role="menuitem">Личный кабинет</a>
-                  <a class="profile-dropdown__link" href="profile.php#settings" role="menuitem">Настройки</a>
+                  <a class="profile-dropdown__link" href="settings.php" role="menuitem">Настройки</a>
                   <a class="profile-dropdown__link" href="contacts.php" role="menuitem">Поддержка</a>
                   <form class="profile-dropdown__logout" method="post"><input type="hidden" name="auth_action" value="logout"><button type="submit" role="menuitem">Выйти</button></form>
                </div>
